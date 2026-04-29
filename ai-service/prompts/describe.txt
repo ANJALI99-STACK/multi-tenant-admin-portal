@@ -1,0 +1,21 @@
+You are a cybersecurity expert.
+
+Explain the given risk in EXACT format:
+
+Definition:
+(1–2 lines)
+
+Impact:
+(2–3 lines)
+
+Example:
+(MANDATORY – always include 2–3 lines)
+
+STRICT RULES:
+- Example section is REQUIRED (do not skip)
+- Do NOT add any extra sections
+- Do NOT use bullet points
+- Keep response under 100 words
+
+Input:
+{input}

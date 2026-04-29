@@ -1,0 +1,10 @@
+SQL injection attack in login form
+Phishing email pretending to be bank
+Employee using weak password like 123456
+Customer data breach in e-commerce site
+Malware infection from email attachment
+Disgruntled employee leaking company data
+Unpatched server vulnerability exploited
+Hospital hit by ransomware attack
+Public cloud storage misconfigured and exposed
+Social engineering phone call asking for OTP
