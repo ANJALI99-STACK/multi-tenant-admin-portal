@@ -1,6 +1,12 @@
 .env
-node_modules/
 target/
+*.class
+
+# Mobile/Web debris (as requested)
+node_modules/
 __pycache__/
-venv/
-chroma_data/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
