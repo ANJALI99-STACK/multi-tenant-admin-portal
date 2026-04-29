@@ -1,32 +1,32 @@
 from flask import Flask, request, jsonify
 import time
+from datetime import datetime
+import os
+from groq import Groq
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
-# =========================
-# DAY 2: PRIMARY PROMPT
-# =========================
+load_dotenv()
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
 PRIMARY_PROMPT = """
-You are CampusPe AI, a student-friendly text analysis assistant.
+You are a helpful assistant.
 
-Your job is to analyze user input and respond in a structured, simple, and helpful way.
-
-Rules:
-- Understand the input carefully
-- Provide clear explanation or analysis
-- Keep responses short and structured
-- If input is unclear, ask a clarification question
-- Do not hallucinate or assume facts
-
-Output format:
+Provide:
 - Summary
 - Key insights
-- Sentiment (if applicable)
+- Sentiment
 
 User Input:
 {text}
+"""
 
-Response:
+RECOMMEND_PROMPT = """
+Give 3 short actionable recommendations for this input.
+
+User Input:
+{text}
 """
 
 
@@ -35,12 +35,9 @@ def home():
     return {"message": "AI Service Running"}
 
 
-@app.route("/health", methods=["GET"])
+@app.route("/health")
 def health():
-    return {
-        "status": "healthy",
-        "message": "AI Service is running"
-    }
+    return {"status": "healthy"}
 
 
 @app.route("/describe", methods=["POST"])
@@ -50,69 +47,87 @@ def describe():
     try:
         data = request.get_json()
 
-        if not data or "text" not in data:
-            return jsonify({
-                "status": "error",
-                "message": "Please provide 'text' in request body"
-            }), 400
+        if not data or "input" not in data:
+            return jsonify({"error": "Missing 'input'"}), 400
 
-        text = data["text"]
+        user_input = data["input"]
+        prompt = PRIMARY_PROMPT.format(text=user_input)
 
-        # =========================
-        # BASIC ANALYSIS (DAY 1 LOGIC)
-        # =========================
-        words = text.split()
-        word_count = len(words)
-        char_count = len(text)
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}]
+        )
 
-        summary = " ".join(words[:5]) if words else ""
-
-        positive_words = ["good", "great", "happy", "excellent", "awesome", "nice", "love"]
-        negative_words = ["bad", "sad", "terrible", "worst", "poor", "hate"]
-
-        sentiment = "neutral"
-        for word in words:
-            lw = word.lower()
-            if lw in positive_words:
-                sentiment = "positive"
-                break
-            elif lw in negative_words:
-                sentiment = "negative"
-                break
-
-        # =========================
-        # DAY 2 PROMPT INTEGRATION
-        # =========================
-        prompt_used = PRIMARY_PROMPT.format(text=text)
-
-        response_time = round((time.time() - start_time) * 1000, 2)
+        output = response.choices[0].message.content
 
         return jsonify({
             "status": "success",
-            "input_text": text,
-
-            # Prompt layer (Day 2 addition)
-            "prompt_used": prompt_used,
-
-            # Analysis output
-            "analysis": {
-                "word_count": word_count,
-                "character_count": char_count,
-                "summary": summary,
-                "sentiment": sentiment
-            },
-
+            "input": user_input,
+            "output": output,
+            "generated_at": datetime.utcnow().isoformat(),
             "meta": {
-                "response_time_ms": response_time
-            },
+                "response_time_ms": round((time.time() - start_time) * 1000, 2)
+            }
+        })
 
-            "message": "Text analyzed successfully using CampusPe Day 2 prompt system"
+    except Exception as e:
+        return jsonify({"status": "error", "error": str(e)}), 500
+
+
+@app.route("/recommend", methods=["POST"])
+def recommend():
+    start_time = time.time()
+
+    try:
+        data = request.get_json()
+
+        if not data or "input" not in data:
+            return jsonify({"error": "Missing 'input'"}), 400
+
+        user_input = data["input"]
+        prompt = RECOMMEND_PROMPT.format(text=user_input)
+
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        raw_output = response.choices[0].message.content
+
+        lines = raw_output.split("\n")
+        clean_lines = [
+            l.strip("-•123456789. ").strip()
+            for l in lines
+            if l.strip() and not l.lower().startswith("here are")
+        ]
+
+        clean_lines = clean_lines[:3]
+
+        while len(clean_lines) < 3:
+            clean_lines.append("Improve skills through consistent practice")
+
+        recommendations = []
+        for i, line in enumerate(clean_lines):
+            recommendations.append({
+                "action_type": f"Action {i+1}",
+                "description": line,
+                "priority": "high" if i == 0 else "medium"
+            })
+
+        return jsonify({
+            "status": "success",
+            "input": user_input,
+            "recommendations": recommendations,
+            "generated_at": datetime.utcnow().isoformat(),
+            "meta": {
+                "response_time_ms": round((time.time() - start_time) * 1000, 2)
+            }
         })
 
     except Exception as e:
         return jsonify({
             "status": "error",
-            "message": "Something went wrong",
+            "message": "Failed to generate recommendations",
             "error": str(e)
         }), 500
 
