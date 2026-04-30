@@ -264,3 +264,45 @@ All security controls are functioning as expected.
 
 ### Conclusion
 The AI service meets Week 2 security requirements with proper authentication, input validation, and abuse protection mechanisms in place. All implemented controls were tested and verified successfully.
+
+---
+
+## Day 10 — AI Quality Review
+
+### Objective
+Evaluate AI response quality using 10 real cybersecurity inputs.
+
+---
+
+### Testing Method
+- 10 fresh inputs tested
+- Responses scored manually (1–5)
+- Criteria:
+  - Format correctness
+  - Clarity and conciseness
+  - Relevance to input
+
+---
+
+### Initial Observation
+- Earlier prompt produced inconsistent and verbose outputs
+- Average score ~3.5/5
+
+---
+
+### Improvements
+- Enforced strict output format (Definition, Impact, Example)
+- Limited response length
+- Removed unnecessary formatting and verbosity
+
+---
+
+### Final Results
+- Average Score: 4.3 / 5
+- All responses structured and consistent
+- No incomplete outputs
+
+---
+
+### Conclusion
+AI output quality meets required threshold (≥ 4/5) with reliable and consistent responses.
