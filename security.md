@@ -56,6 +56,8 @@ This document outlines key security considerations and mitigation strategies for
 ## Summary
 All major AI-related risks are identified and mitigation strategies are implemented or planned for upcoming tasks.
 
+---
+
 ## Week 1 Security Testing
 
 ### 1. Empty Input Test
@@ -74,10 +76,10 @@ Input validation is working correctly.
 "SELECT * FROM users; DROP TABLE users;"
 
 **Result:**
-No execution occurred. Input treated as plain text.
+Request blocked with HTTP 400 response.
 
 **Conclusion:**
-System is safe from SQL injection as no database queries are executed directly from user input.
+SQL injection patterns are actively detected and blocked by input validation logic.
 
 ---
 
@@ -189,9 +191,9 @@ The scan identified the following issues:
 
 ### Conclusion
 No Critical or High vulnerabilities were found.  
-All important security headers were implemented, and identified risks were mitigated to an acceptable level for development. 
+All important security headers were implemented, and identified risks were mitigated to an acceptable level for development.
 
-ZAP report generated locally for verification.
+ZAP report was generated locally for verification purposes.
 
 ---
 
@@ -215,3 +217,50 @@ All 8 tests passed successfully.
 
 ### Conclusion
 The AI service endpoints are functioning correctly with proper validation, security checks, and response handling.
+
+---
+
+## Day 9 — Security Sign-Off
+
+### Overview
+Final verification of security mechanisms implemented in the AI service.
+
+---
+
+### JWT Authentication
+- Implemented basic JWT validation for protected endpoints
+- Token verification implemented using PyJWT with HS256 algorithm
+- Requests require `Authorization: Bearer <token>`
+- Invalid or missing tokens return HTTP 401
+
+---
+
+### Rate Limiting
+- Configured using Flask-Limiter
+- Limit: 30 requests per minute per IP
+- Enforced at application level before request processing
+- Prevents abuse and API flooding
+
+---
+
+### Injection Protection
+- SQL injection patterns detected and blocked
+- Prompt injection attempts rejected
+- Invalid or malicious inputs return HTTP 400
+
+---
+
+### PII Audit
+- Reviewed all prompts and API inputs
+- No personal identifiable information (PII) is stored or sent
+- Only generic cybersecurity-related inputs are processed
+
+---
+
+### Verification Result
+All security controls are functioning as expected.
+
+---
+
+### Conclusion
+The AI service meets Week 2 security requirements with proper authentication, input validation, and abuse protection mechanisms in place. All implemented controls were tested and verified successfully.
