@@ -53,7 +53,7 @@ This document outlines key security considerations and mitigation strategies for
 
 ---
 
-## Summary
+## Initial Summary
 All major AI-related risks are identified and mitigation strategies are implemented or planned for upcoming tasks.
 
 ---
@@ -95,7 +95,7 @@ Prompt injection detection is working correctly.
 
 ---
 
-### Overall Summary
+### Conclusion
 All tested inputs (empty, SQL injection, prompt injection) were handled safely without system compromise.
 
 ---
@@ -322,3 +322,112 @@ AI output quality meets required threshold (≥ 4/5) with reliable and consisten
 
 ### Conclusion
 End-to-end functionality verified successfully in containerized environment.
+
+---
+
+## Day 12 — Final Security Review & Sign-Off
+
+### Executive Summary
+The AI service has undergone comprehensive security validation across all development phases.  
+Key risks including injection attacks, API abuse, and unauthorized access have been identified, mitigated, and verified through testing.
+
+The system demonstrates strong baseline security suitable for development and controlled deployment environments.
+
+---
+
+### Security Controls Implemented
+
+#### 1. Authentication
+- JWT-based authentication enforced on all protected endpoints
+- Unauthorized access returns HTTP 401
+- Token validation handled using PyJWT (HS256)
+
+#### 2. Input Validation
+- Empty input rejection
+- SQL injection pattern detection and blocking
+- Prompt injection detection implemented
+- Invalid requests return HTTP 400
+
+#### 3. Rate Limiting
+- Enforced via Flask-Limiter
+- Limit: 30 requests/minute per IP
+- Prevents abuse and denial-of-service scenarios
+
+#### 4. Secure Headers
+- Content-Security-Policy (CSP)
+- X-Content-Type-Options: nosniff
+- X-Frame-Options: DENY
+- X-XSS-Protection enabled
+- Debug mode disabled
+
+#### 5. Secret Management
+- API keys stored in `.env`
+- `.env` excluded from version control
+- Key rotation performed after accidental exposure detection
+
+---
+
+### Testing Summary
+
+| Category | Status |
+|--------|--------|
+| Input Validation |  Passed |
+| SQL Injection Protection |  Passed |
+| Prompt Injection Protection |  Passed |
+| JWT Authentication |  Passed |
+| Rate Limiting |  Passed |
+| Security Headers |  Passed |
+| AI Output Validation |  Passed |
+| Docker E2E Test |  Passed |
+
+---
+
+### Findings & Fixes
+
+#### Critical Issues
+-  None found
+
+#### High Issues
+-  None found
+
+#### Medium Issues (Resolved)
+- Missing security headers → Fixed
+- Debug mode enabled → Disabled
+- Duplicate insecure app entry → Removed
+
+#### Low Issues (Remaining)
+- CSP policy not fully strict
+- Server header partially exposed (Flask dev server)
+
+---
+
+### Residual Risks
+
+The following risks remain but are acceptable for current scope:
+
+- Use of development server instead of production WSGI (Gunicorn)
+- Basic JWT secret (not rotated via secure vault)
+- No HTTPS enforcement (local environment)
+- Limited prompt injection detection (rule-based)
+
+---
+
+### Recommendations (Future Work)
+
+- Deploy using Gunicorn + reverse proxy (Nginx)
+- Enforce HTTPS for all endpoints
+- Use stronger JWT secret management (environment vault)
+- Implement advanced prompt injection detection
+- Add role-based access control (RBAC)
+- Enhance CSP policy with strict directives
+
+---
+
+### Team Sign-Off
+
+The AI service security implementation has been reviewed and validated.
+
+All critical and high-risk issues have been addressed.  
+The system meets Week 2 security requirements and is ready for integration and further development.
+
+**Status: APPROVED FOR CONTINUATION (Week 3)**
