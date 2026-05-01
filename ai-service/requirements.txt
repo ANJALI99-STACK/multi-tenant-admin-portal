@@ -3,3 +3,5 @@ requests
 python-dotenv
 groq
 flask-limiter
+PyJWT
+httpx

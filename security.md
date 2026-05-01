@@ -306,3 +306,19 @@ Evaluate AI response quality using 10 real cybersecurity inputs.
 
 ### Conclusion
 AI output quality meets required threshold (≥ 4/5) with reliable and consistent responses.
+
+## Day 11 — Docker E2E Test
+
+### Setup
+- Flask AI service containerized using Docker
+- docker-compose used to run the service
+- Application exposed on port 5000
+
+### Testing
+- `/health` endpoint → HTTP 200 OK
+- JWT authentication → validated (401 without token, success with token)
+- Input validation → empty, SQL injection, and prompt injection blocked
+- AI integration → responses successfully generated
+
+### Conclusion
+End-to-end functionality verified successfully in containerized environment.
