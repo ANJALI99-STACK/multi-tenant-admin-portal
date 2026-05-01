@@ -479,3 +479,35 @@ No critical or high-risk vulnerabilities remain.
 The system is approved for integration and further development in Week 3.
 
 **Final Status: APPROVED**
+
+
+---
+
+## Day 17 — Docker Reset & Fresh State Validation
+
+### Objective
+Validate system behavior after complete environment reset.
+
+---
+
+### Steps Performed
+- Executed `docker-compose down -v` to remove containers and volumes
+- Restarted system using `docker-compose up --build`
+
+---
+
+### Verification Results
+
+| Test Case | Result |
+|----------|--------|
+| Health endpoint |  Working |
+| JWT authentication |  Enforced |
+| Valid AI request |  Working |
+| SQL Injection protection |  Working |
+| Prompt Injection protection |  Working |
+
+---
+
+### Conclusion
+System works correctly from a clean state with no dependency on previous data.  
+All endpoints, security controls, and AI functionality remain stable after reset.
